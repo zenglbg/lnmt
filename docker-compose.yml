@@ -1,0 +1,50 @@
+version: "3"
+
+services:
+  mysql:
+    container_name: mysql-java
+    image: mysql
+    restart: always
+    expose:
+      - "3306"
+    ports:
+      - "3307:3306"
+    volumes:
+      - ./docker/data/mysql:/var/lib/mysql
+      - ./docker/log/proxy:/data/www/www.90231.cn/runtime/log
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=www_90231_cn
+  rds:
+    container_name: redis-java
+    image: redis
+    restart: always
+    expose:
+      - "6379"
+    ports:
+      - "6377:6379"
+    volumes:
+      - ./docker/data/redis:/data
+    command: redis-server --appendonly yes
+  tmc:
+    container_name: tmc
+    image: tomcat
+    expose:
+      - "8080"
+    restart: always
+    volumes:
+      - ./www:/usr/local/tomcat/webapps
+  proxy:
+    container_name: proxy-java
+    build: "./docker/files/proxy"
+    restart: always
+    ports:
+      - "80:80"
+    volumes:
+      - "./www:/data/www"
+      - "./docker/config/proxy/conf.d/:/etc/nginx/conf.d"
+      - "./docker/log/proxy:/var/log/nginx"
+    depends_on:
+      - tmc
+    links:
+      - tmc

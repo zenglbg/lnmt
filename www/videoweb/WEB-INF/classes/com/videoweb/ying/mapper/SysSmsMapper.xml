@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.videoweb.ying.dao.SysSmsMapper">
+
+
+
+	<select id="selectIdPage" resultType="java.lang.Integer">
+		select id from sys_sms
+		<where>
+			<if test="cm.keyword != null and cm.keyword != ''">
+				and (
+					or account_sid like CONCAT('%',#{cm.keyword},'%')
+					or auth_token like CONCAT('%',#{cm.keyword},'%')
+					or sms_flag like CONCAT('%',#{cm.keyword},'%')
+				)
+			</if>
+		</where>
+	</select>
+	
+	<select id="selectSms" resultType="java.util.Map">
+		select id , 
+		   account_sid as accountSid, 
+		   auth_token as authToken, 
+		   sms_flag as smsFlag,
+		   sms_key as smsKey
+		   from sys_sms
+	</select>
+</mapper>
